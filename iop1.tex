@@ -1,0 +1,301 @@
+%% LyX 2.3.7 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[a4paper]{jpconf}
+\usepackage[latin9]{inputenc}
+\usepackage{graphicx}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\newcommand{\lyxaddress}[1]{
+	\par {\raggedright #1
+	\vspace{1.4em}
+	\noindent\par}
+}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+\title{Satellite-based Mangrove species abundance estimate using Machine
+Learning ensemble}
+\author{Hastuadi Harsa, Gathot Winarso, Kuncoro Teguh Setiawan and Wikanti
+Asriningrum}
+
+\lyxaddress{\address{Remote Sensing Research Center\\
+Research Organization for Aeronautics and Space\\
+Indonesia National Research and Innovation Agency}}
+
+\ead{hastuadi.harsa@brin.go.id}
+\begin{abstract}
+The mangrove ecosystem is a vital feature in a coastal area, playing
+a critical role in carbon sequestration beneath the soil. Carbon preservation
+capacity varies among different species of mangrove. Thus, by quantifying
+the number of mangrove species in a given area, the volume of carbon
+sequestered can be estimated. Satellite imagery is highly effective
+for gathering such data across vast territories. In this study, we
+present an evaluation of mangrove species abundance across a large
+coastal area using Landsat satellite imagery. We employed machine
+learning algorithms to classify species based on spectral field observation
+data to achieve this. These algorithms were trained individually and
+ensembled to enhance prediction performance. There are 466 models
+generated in a two-hour training phase. After assessing these models,
+we identified that a stacked ensemble consisting of Deep Learning,
+two Distributed Random Forests, a Generalized Boosting Model, a Generalized
+Linear Model, and Extreme Gradient Boosting algorithms has the most
+superior predictive accuracy. The model achieved a mean accuracy value
+of 95\% when tested on observation data. After applying the best model
+to the satellite data, our results indicate that Rhizophora Apiculata
+and Excoecaria Agallocha are the two most abundant mangrove species
+in the study area, covering 17.71\% (195.02 Ha) and 10.49\% (115.50
+Ha), respectively. 
+\end{abstract}
+
+\section{Introduction}
+
+Carbon trading serves as a climate change mitigation strategy by creating
+economic incentives for reducing greenhouse gas emissions \cite{Zheng2023}.
+The approach enables industries and countries to trade carbon credits,
+allowing those exceeding emission reduction targets to sell surplus
+credits to entities struggling to meet their targets \cite{Xu2023,Ke2023}.
+By valuing carbon emissions and facilitating their market-driven reduction,
+carbon trading promotes sustainable practices and contributes to overall
+emission reductions\cite{Cetera2022}.
+
+Mangrove forests, characterized by their unique coastal ecosystems,
+are known for their exceptional capacity to sequester and store carbon\cite{Sondak2019}.
+These ecosystems, comprising mangrove trees and associated vegetation,
+act as a vital carbon preservers by absorbing atmospheric carbon dioxide
+(CO2) and retaining it within their biomass and sediments\cite{Wong2020}.
+Mangrove plants possess the ability to sequester carbon at rates several
+times higher than terrestrial forests, making them crucial allies
+in climate change mitigation efforts\cite{Nasir2018}. 
+\begin{figure}
+\noindent \centering{}\includegraphics{images/studyarea2}\caption{\label{fig:studyarea}The study area, located in the western part
+of Sumatra, Indonesia, was within the intersection of the available
+satellite data scene and the geospatial mangrove vector area.}
+\end{figure}
+
+However, accurately estimating the carbon stock of mangrove forests
+requires understanding the different carbon sequestration potentials
+among various mangrove species\cite{Lassalle2022}. Different species
+exhibit varying levels of biomass and different growth rates, directly
+impacting their carbon storage capacity\cite{Wang2019,Navarro2019}.
+Hence, identifying and quantifying mangrove coverage, accounting for
+species-level variations, become essential for precise carbon stock
+assessments\cite{Maeda2016,Zheng2022,Jiang2022}.
+
+In recent years, remote sensing techniques, particularly satellite
+imagery, have revolutionized ecological studies by providing a cost-effective
+and efficient means of mapping large areas\cite{Ma2019,Atmaja2022}.
+Satellite imagery enables the identification and monitoring of mangrove
+forests at regional and global scales, facilitating comprehensive
+assessments of carbon stock estimates\cite{Pham2019,Gandhi2019}.
+Integrating satellite imagery with Artificial Intelligence (AI) algorithms
+allows for advanced analysis of spectral bands to predict mangrove
+species, aiding in species-specific carbon stock calculations\cite{Hsu2020}.
+
+This paper describes the use of AI for predicting mangrove species
+from Landsat satellite imagery bands. Therefore, the carbon stock
+estimate can be measured subsequently using the information from the
+predicted mangrove species abundance.
+
+\section{Data and methods}
+
+The study area was located within the Sembilang National Park in Banyuasin
+Regency, along the east coast of Sumatra, Indonesia. The area covered
+by a red rectangle at the top-left of Figure \ref{fig:studyarea}shows
+the study area. This study collected three distinct data types: the
+mangrove area represented as polygons in a geospatial vector format
+file, field-observation data, and Landsat satellite data. The Indonesia
+Ministry of Environment and Forestry obtained the geospatial vector
+data. The data determined the boundary of the mangrove area. The field-observation
+data were collected within the mangrove area, employing a spectrometer
+instrument. The instrument displayed the spectral characteristics
+of mangrove leaves at selected sampling locations. Each observed mangrove
+leaf was analyzed across seven distinct spectral bands to unveil a
+comprehensive understanding of its unique attributes. The measurement
+values the spectrometer gave, and the observed mangrove leaf species
+were then recorded. Eventually, the observation data contained eight
+variables, i.e., seven bands of spectrums and their related species.
+In the measurement process, only the broadest leaf in the neighborhood
+was selected as the sample data, and there were 21 mangrove species
+identified in the study area.
+
+The satellite data were obtained from a single Landsat Satellite imagery
+scene and covered some geospatial vector data. The data were represented
+in a geospatial raster format. The raster had a homogeneous spatial
+resolution of approximately 30 meters. The superposition of satellite
+data and the geospatial vector data are displayed at the bottom-left
+of Figure \ref{fig:studyarea}. The satellite data also contained
+seven bands, as in the field observation data. Both observation and
+satellite data bands were referred to as B1 to B7, as the abbreviation
+of a band and its corresponding satellite sensor. The distinction
+between the observed and satellite data was that the observed data
+contained eight variables, while the satellite data contained only
+seven. The eighth variable of the observation data was labeled as
+`class,' denoting the species of each observed mangrove leaf. A composition
+of Red-Green-Blue (RGB) bands of satellite raster data is displayed
+on the right side of Figure \ref{fig:studyarea}. This image illustrates
+a true color composition as a visible color spectrum. The RGB values
+were denoted by B1, B2, and B3 for Blue, Green, and Red colors, respectively.
+The red polygon reveals the overlapping area between the mangrove
+geospatial vector and satellite raster data.
+
+The main effort in estimating the mangrove species' abundance was
+presenting an absent variable to the satellite data, which was present
+in the observation data. The absent variable was the eighth variable,
+i.e., class. Since the class variable was the dependent variable of
+each datum in the observation data, it was essential to extract the
+underlying interaction optimally among all band variables as the independent
+variables. The satellite bands interaction characterized the class
+variable. In Machine Learning (ML) terms, this process is known as
+classification. This study employed some ML algorithms to build models
+that extract the underlying relationship between the independent and
+the dependent variables of observation data.
+
+Before building the model, all values of the independent variables
+in the observation data were standardized to have zero mean and a
+standard deviation of one. By standardizing the independent variables,
+all independent variables would have the same amount of contribution
+to the model building. In addition, the standardization procedure
+would exaggerate the interaction pattern among variables. The standardized
+observation data were then duplicated into 20 folds to provide a cross-validation
+element. Each fold was separated into two components: training and
+validation. The ratio of training and validation for all folds was
+80\% and 20\%, respectively. The order of training and validation
+data were chosen randomly within each fold.
+
+The standardized observation data were then fed to the ML algorithms
+as training data. The algorithms chosen in this study were Distributed
+Random Forest (DRF), Generalized Linear Model (GLM), Extreme Gradient
+Boosting (XGBoost), Generalized Boosting Machine (GBM), and Deep Learning
+(DL). This ML algorithm each had different model parameters. All algorithms
+were trained multiple times using various configurations following
+the needs of each algorithm's parameter. Each algorithm setup produced
+a single model. The models were stored for further performance comparison.
+A total of two-hour training sessions was designated as the maximum
+training time. Models with good performance were also ensembled to
+outperform each algorithm's best model. 
+\begin{figure}
+\noindent \centering{}\label{fig:performance}\includegraphics[width=0.75\textwidth]{images/akurasi_dan_fold}\caption{Model performance: (a) the top-10 best models out of 466, sorted by
+their accuracy, (b) best model accuracy in each fold.}
+\end{figure}
+
+One final best model was then chosen from the model's collection.
+This model was adopted to predict mangrove species at pixels of the
+satellite bands data. The satellite bands data were also standardized
+first as the training data. The prediction was performed only on the
+pixels located inside the mangrove polygons. All predicted species
+were then tabulated to estimate the abundance of species within the
+mangrove polygons.
+
+\section{Results and discussion}
+
+The modeling of the spectral combination value in composing the mangrove
+species yielded 466 models. Accuracy metrics determined these models'
+performance. A single accuracy value was defined as comparing the
+number of correct predicted species and the number of data. Since
+there were 20 folds of cross-validation datasets, the accuracy representing
+a model was determined as the mean of all accuracy of the 20 folds
+cross-validation dataset. Furthermore, the mean accuracy was taken
+as the models' sorting variable. After being sorted, the best model
+was a stacked ensemble model composed of six base models, i.e., DL,
+two DRFs, GBM, GLM, and XGBoost. The meta-learner algorithm for ensembling
+these base models was a GLM algorithm. The mean accuracy of the best
+model was 95.04\%, as shown in Figure \ref{fig:performance} (a),
+together with other sorted top-nine models. This accuracy value is
+qualitatively good. The individual accuracy of the best model for
+each fold is displayed in Figure \ref{fig:performance} (b). There
+are two groups of accuracy values in each fold presented in Figure
+\ref{fig:performance} (b), i.e., the accuracy for all species in
+each fold data set and the mean accuracy for each class in each fold.
+The accuracy for all species in each folds of cross-validation ranged
+between 86\% to 100\% and between 90\% to 100\% for per species.
+
+The spatial distribution of species classification identified by the
+best models in the satellite data is shown in \ref{fig:prediction}.
+Most species inhabited a clustered region. There are two important
+variables related to species identification, i.e., the number and
+the spread. The greater number of a species would result in an easier
+identification. On the other hand, the wider the spread of a species
+would result in a harder identification. If a species scattered over
+the area, then it must present in a great number for an easier identification.
+\begin{figure}
+\noindent \centering{}\label{fig:prediction}\includegraphics[width=1\textwidth]{images/prediction2-01}\caption{The best model classification output.}
+\end{figure}
+
+Figure \ref{fig:top5} emphasizes the location of five most abundant
+species for a better location-related analysis. Rhizophora Apiculata,
+Excoecaria Agallocha, and Sonneratia ovata, the top three most abundant
+species, are mostly concentrate at a specific location, while Avicennia
+Officinalis and Ceriops Tagal are more distributed over the area.
+A complete list of all species count is displayed in Table \ref{table:speciescoverage}.
+
+in Table \ref{table:speciescoverage}, each pixel of satellite data
+were tallied by its classification predicted by the model. Rhizophora
+Apiculata and Excoecaria Agallocha occupied 216693 and 128331 pixels,
+respectively or 17.71\% and 10.49\% in percentage of the total pixels.
+The least species is Acrostichum sp, covering 1667 pixels or 0.14\%
+of the total pixels. Since the resolution of Landsat is 30$\times$30$m^{2}$,
+therefore the coverage area in Hectar ($Ha$) can be obtained by multiplying
+the number of pixel with 0.09. 
+\begin{figure}
+\noindent \centering{}\label{fig:top5}\includegraphics[width=1\textwidth]{images/distribusi_kelas_terbanyak}\caption{Distribution of five most-abundance mangrove species identified by
+the best model.}
+\end{figure}
+
+\begin{table} 
+\caption{\label{table:speciescoverage}Area coverage} 
+\begin{center} 
+\begin{tabular}{crr@{\extracolsep{0pt}.}lr@{\extracolsep{0pt}.}l} 
+\br 
+Species & Pixel count & \multicolumn{2}{c}{Percentage } & \multicolumn{2}{c}{Coverage (Hectare) }
+\tabularnewline 
+\hline 
+Rhizophora Apiculata & 216693 & 17&71 & 19,502&37\tabularnewline 
+Excoecaria agallocha & 128331 & 10&49 & 11,549&79\tabularnewline 
+Sonneratia ovata & 121761 & 9&95 & 10,958&49\tabularnewline 
+Avicennia officinalis & 101432 & 8&29 & 9,128&88\tabularnewline 
+Ceriops tagal & 96629 & 7&90 & 8,696&61\tabularnewline 
+Avicennia alba & 86897 & 7&10 & 7,820&73\tabularnewline 
+Derris trifoliata & 71376 & 5&83 & 6,423&84\tabularnewline 
+Bruguiera cylindrica & 68186 & 5&57 & 6,136&74 \tabularnewline 
+Rhizophora mucronata & 64220 & 5&25 & 5,779&8 \tabularnewline 
+Xylocarpus granatum & 53867 & 4&40 & 4,848&03 \tabularnewline 
+Bruguiera parviflora & 51098 & 4&18 & 4,598&82 \tabularnewline 
+Nypa fruticans & 36129 & 2&95 & 3,251&61 \tabularnewline 
+Sonneratia alba & 29928 & 2&45 & 2,693&52 \tabularnewline 
+Acrostichum speciosum & 29282 & 2&39 & 2,635&38 \tabularnewline 
+Avicennia marina & 18256 & 1&49 & 1,643&04 \tabularnewline 
+Bruguiera sexangula & 16083 & 1&31 & 1,447&47 \tabularnewline 
+Acrostichum aureum & 10411 & 0&85 & 936&99 \tabularnewline 
+Acanthus ilicifolius & 9181 & 0&75 & 826&29 \tabularnewline 
+Bruguiera gymnorrhiza & 6378 & 0&52 & 574&02 \tabularnewline 
+Rhizophora stylosa & 5680 & 0&46 & 511&20 \tabularnewline 
+Acrostichum sp & 1667 & 0&14 & 150&03\tabularnewline 
+\br 
+\end{tabular} 
+\end{center} 
+\end{table}
+
+\section{Conclusion}
+
+An estimate method of mangrove species abundance has been presented
+in this paper. The method applied some ML Machine Learning (ML) algorithms
+to provide species classification models. The algorithms used mangrove
+species spectrum data from field observation as their learning materials.
+Some best ML models were then ensembled to develop a better model.
+The best model was then implemented as a classifier of Landsat satellite
+data. Based on the classification output, the coverage of each mangrove
+species in the study area can be estimated. Rhizophora Apiculata and
+Excoecaria agallocha are the two most abundant mangrove species found.
+By quantifying the abundance of mangrove species, the amount of carbon
+sequestered can also be computed as a consideration element in carbon
+trading. 
+
+\section*{References}
+
+\bibliographystyle{iopart-num}
+\addcontentsline{toc}{section}{\refname}\bibliography{all2}
+
+\end{document}
